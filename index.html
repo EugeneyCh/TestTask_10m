@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test_Task</title>
+  </head>
+  <body style="padding-left: 30px">
+    <div style="margin: 50px auto">
+      <input type="file" id="file" style="margin: 0 auto; font-size: 30px" />
+      <button style="margin-top: 50px; font-size: 30px">
+        Вирахувати значення
+      </button>
+      <div id="output"></div>
+    </div>
+    <script>
+      document.querySelector("button").addEventListener("click", function () {
+        let file = document.getElementById("file").files[0];
+        let reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = function () {
+          const numbersUnsort = reader.result.split("\n").map(Number);
+          const numbers = [...numbersUnsort];
+
+          const numbersRise = numbers.sort((a, b) => a - b);
+
+          let mediana;
+          if (numbersRise.length % 2 === 0) {
+            mediana =
+              (numbersRise[numbersRise.length / 2 - 1] +
+                numbersRise[numbersRise.length / 2]) /
+              2;
+          } else {
+            mediana = numbersRise[Math.floor(numbersRise.length / 2)];
+          }
+
+          // Finding average
+
+          const sumOfNumbers = numbers.reduce((acc, number) => acc + number, 0);
+          const average = sumOfNumbers / numbers.length;
+
+          const rowRiseNumbers = [];
+          let currentRisingSequence = [numbersUnsort[0]];
+
+          for (let i = 1; i < numbersUnsort.length; i++) {
+            if (numbersUnsort[i] > numbersUnsort[i - 1]) {
+              currentRisingSequence.push(numbersUnsort[i]);
+            } else {
+              if (currentRisingSequence.length > rowRiseNumbers.length) {
+                rowRiseNumbers.splice(
+                  0,
+                  rowRiseNumbers.length,
+                  ...currentRisingSequence
+                );
+              }
+              currentRisingSequence = [numbersUnsort[i]];
+            }
+          }
+
+          if (currentRisingSequence.length > rowRiseNumbers.length) {
+            rowRiseNumbers.splice(
+              0,
+              rowRiseNumbers.length,
+              ...currentRisingSequence
+            );
+          }
+
+          const rowDecreaseNumbers = [];
+          let currentDescendingSequence = [numbersUnsort[0]];
+
+          for (let i = 1; i < numbersUnsort.length; i++) {
+            if (numbersUnsort[i] < numbersUnsort[i - 1]) {
+              currentDescendingSequence.push(numbersUnsort[i]);
+            } else {
+              if (
+                currentDescendingSequence.length > rowDecreaseNumbers.length
+              ) {
+                rowDecreaseNumbers.splice(
+                  0,
+                  rowDecreaseNumbers.length,
+                  ...currentDescendingSequence
+                );
+              }
+              currentDescendingSequence = [numbersUnsort[i]];
+            }
+          }
+
+          if (currentDescendingSequence.length > rowDecreaseNumbers.length) {
+            rowDecreaseNumbers.splice(
+              0,
+              rowDecreaseNumbers.length,
+              ...currentDescendingSequence
+            );
+          }
+
+          const output = document.getElementById("output");
+
+          const markup = `
+            <p style="font-size: 24px">Мінімальне число = ${numbersRise[0]}</p>
+            <p style="font-size: 24px">Максимальне число = ${
+              numbersRise[numbersRise.length - 1]
+            }</p>
+            <p style="font-size: 24px">Медіана = ${mediana}</p>
+            <p style="font-size: 24px">Середнє арифметичне = ${average}</p>
+            <p style="font-size: 24px">Найдовша послідовність чисел, що збільшуються :<br><br> ${rowRiseNumbers}</p>
+            <p style="font-size: 24px">Найдовша послідовність чисел, що зменшуються :<br><br>  ${rowDecreaseNumbers}</p>
+          `;
+          output.innerHTML = markup;
+        };
+
+        reader.onerror = function () {
+          console.log(reader.error);
+        };
+      });
+    </script>
+  </body>
+</html>
